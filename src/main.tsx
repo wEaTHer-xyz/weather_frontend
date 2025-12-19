@@ -21,6 +21,11 @@ createRoot(document.getElementById('root')!).render(
           accentColor: '#00d4ff',
         },
         loginMethods: ['email', 'wallet', 'google'],
+        embeddedWallets: {
+          ethereum: {
+            createOnLogin: 'users-without-wallets',
+          },
+        },
       }}
     >
       <BrowserRouter>
