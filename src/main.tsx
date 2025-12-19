@@ -26,10 +26,6 @@ createRoot(document.getElementById('root')!).render(
             createOnLogin: 'users-without-wallets',
           },
         },
-        // 모바일 환경에서 시스템 브라우저 사용 강제
-        mobileWallets: {
-          allowUnsafeOrigins: false,
-        },
       }}
     >
       <BrowserRouter>

@@ -226,7 +226,12 @@ function Markets() {
 
         {/* Markets Grid */}
         <main className="markets-content">
-          {filteredMarkets.length === 0 ? (
+          {loading ? (
+            <div className="loading-state">
+              <div className="loading-spinner"></div>
+              <p>마켓을 불러오는 중...</p>
+            </div>
+          ) : filteredMarkets.length === 0 ? (
             <div className="empty-state">
               <div className="empty-icon">🔍</div>
               <h3>No markets found</h3>

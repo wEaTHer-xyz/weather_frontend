@@ -10,10 +10,11 @@ export function isWebView(): boolean {
   if (typeof window === 'undefined') return false;
 
   const userAgent = window.navigator.userAgent.toLowerCase();
+  const nav = window.navigator as Navigator & { standalone?: boolean };
 
   // iOS WebView 감지
   const isIOSWebView = /(iphone|ipad|ipod).*version\/[\d\.]+.*safari/i.test(userAgent) &&
-    !window.navigator.standalone &&
+    !nav.standalone &&
     !(window as any).MSStream;
 
   // Android WebView 감지
@@ -23,7 +24,7 @@ export function isWebView(): boolean {
   // 일반적인 WebView 패턴
   const isWebViewPattern = 
     /webview/i.test(userAgent) ||
-    /(iphone|ipad|ipod).*safari/i.test(userAgent) && !window.navigator.standalone;
+    (/(iphone|ipad|ipod).*safari/i.test(userAgent) && !nav.standalone);
 
   return isIOSWebView || isAndroidWebView || isWebViewPattern;
 }
