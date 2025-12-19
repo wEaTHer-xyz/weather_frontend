@@ -11,12 +11,23 @@ function Login() {
     if (ready && authenticated) {
       console.log('User is authenticated with Privy:', user);
       // Auto-redirect to app after successful login
-      navigate('/app');
+      // 약간의 지연을 두어 상태가 완전히 업데이트되도록 함
+      const timer = setTimeout(() => {
+        // replace: true를 사용하여 히스토리 스택에 로그인 페이지가 남지 않도록 함
+        navigate('/app', { replace: true });
+      }, 500);
+      return () => clearTimeout(timer);
     }
   }, [ready, authenticated, user, navigate]);
 
-  const handleSignUp = () => {
-    login();
+  const handleSignUp = async () => {
+    try {
+      await login();
+      // 로그인 성공 후 리다이렉트는 useEffect에서 처리
+      // Privy 모달이 닫힌 후 상태가 업데이트되므로 약간의 지연이 필요할 수 있음
+    } catch (error) {
+      console.error('Login error:', error);
+    }
   };
 
   return (
