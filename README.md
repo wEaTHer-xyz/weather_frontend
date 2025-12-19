@@ -18,6 +18,8 @@ A stunning landing page for the Weather Prediction Market platform with GSAP ani
 - **Vite** - Fast build tool
 - **GSAP** - Animation library
 - **Tailwind CSS** - Utility-first CSS
+- **React Router** - Client-side routing
+- **Privy** - Web3 authentication
 - **Google Fonts** - Premium typography
 
 ## Getting Started
@@ -28,6 +30,20 @@ A stunning landing page for the Weather Prediction Market platform with GSAP ani
 # Install dependencies
 npm install
 ```
+
+### Environment Setup
+
+Create a `.env` file in the root directory:
+
+```
+VITE_PRIVY_APP_ID=your_privy_app_id_here
+```
+
+To get your Privy App ID:
+1. Go to https://dashboard.privy.io/
+2. Create a new app or select an existing one
+3. Copy the App ID from the dashboard
+4. Paste it in your `.env` file
 
 ### Development
 
@@ -57,15 +73,25 @@ npm run preview
 ```
 weatherlanding/
 ├── src/
-│   ├── App.tsx          # Main landing page component
+│   ├── pages/
+│   │   ├── Landing.tsx  # Landing page component
+│   │   ├── Login.tsx    # Login page component
+│   │   └── Login.css    # Login page styles
+│   ├── App.tsx          # Router configuration
 │   ├── App.css          # Component styles
 │   ├── index.css        # Global styles & Tailwind config
-│   └── main.tsx         # App entry point
+│   └── main.tsx         # App entry point with Privy provider
 ├── public/              # Static assets
+├── .env                 # Environment variables
 ├── tailwind.config.js   # Tailwind configuration
 ├── postcss.config.js    # PostCSS configuration
 └── package.json         # Dependencies
 ```
+
+## Routes
+
+- `/` - Landing page
+- `/login` - Login page with Privy authentication
 
 ## Design Highlights
 
