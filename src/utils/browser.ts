@@ -12,6 +12,9 @@ export function isWebView(): boolean {
   const userAgent = window.navigator.userAgent.toLowerCase();
   const nav = window.navigator as Navigator & { standalone?: boolean };
 
+  // 카카오톡 인앱 브라우저 감지
+  const isKakaoTalk = /kakaotalk/i.test(userAgent);
+  
   // iOS WebView 감지
   const isIOSWebView = /(iphone|ipad|ipod).*version\/[\d\.]+.*safari/i.test(userAgent) &&
     !nav.standalone &&
@@ -26,7 +29,7 @@ export function isWebView(): boolean {
     /webview/i.test(userAgent) ||
     (/(iphone|ipad|ipod).*safari/i.test(userAgent) && !nav.standalone);
 
-  return isIOSWebView || isAndroidWebView || isWebViewPattern;
+  return isKakaoTalk || isIOSWebView || isAndroidWebView || isWebViewPattern;
 }
 
 /**
