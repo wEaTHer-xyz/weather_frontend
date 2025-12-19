@@ -144,6 +144,16 @@ function Markets() {
               <span>My Predictions</span>
             </div>
           </div>
+          <div className="nav-section">
+            <div className="nav-section-title">Settings</div>
+            <div className="nav-item" onClick={() => navigate('/settings')}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M12 1v6m0 6v6m9-9h-6m-6 0H3"/>
+              </svg>
+              <span>Settings</span>
+            </div>
+          </div>
         </nav>
       </aside>
 
