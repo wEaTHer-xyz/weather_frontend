@@ -1,16 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Sidebar from '../components/Sidebar';
 import './Markets.css';
 
 interface Market {
   id: string;
   country: string;
+  countryName?: string;
   city: string;
   question: string;
   pool: number;
   participants: number;
   endDate: string;
-  status: 'active' | 'closed';
+  status: 'active' | 'closed' | 'resolved';
 }
 
 const countries = [
@@ -29,7 +31,7 @@ const sampleMarkets: Market[] = [
     question: 'Will it rain tomorrow?',
     pool: 1234,
     participants: 45,
-    endDate: '2024-12-15',
+    endDate: '2025-12-15',
     status: 'active',
   },
   {
@@ -39,7 +41,7 @@ const sampleMarkets: Market[] = [
     question: 'Will temperature exceed 25°C?',
     pool: 856,
     participants: 32,
-    endDate: '2024-12-16',
+    endDate: '2025-12-16',
     status: 'active',
   },
   {
@@ -49,7 +51,7 @@ const sampleMarkets: Market[] = [
     question: 'Will it snow this week?',
     pool: 2145,
     participants: 67,
-    endDate: '2024-12-17',
+    endDate: '2025-12-17',
     status: 'active',
   },
   {
@@ -59,7 +61,7 @@ const sampleMarkets: Market[] = [
     question: 'Will humidity be above 70%?',
     pool: 1567,
     participants: 54,
-    endDate: '2024-12-18',
+    endDate: '2025-12-18',
     status: 'active',
   },
   {
@@ -69,7 +71,7 @@ const sampleMarkets: Market[] = [
     question: 'Will temperature drop below 5°C?',
     pool: 987,
     participants: 38,
-    endDate: '2024-12-19',
+    endDate: '2025-12-19',
     status: 'active',
   },
   {
@@ -79,7 +81,7 @@ const sampleMarkets: Market[] = [
     question: 'Will it be sunny for 3+ days?',
     pool: 1756,
     participants: 61,
-    endDate: '2024-12-20',
+    endDate: '2025-12-20',
     status: 'active',
   },
 ];
@@ -89,8 +91,43 @@ function Markets() {
   const [selectedCountry, setSelectedCountry] = useState<string>('all');
   const [selectedCity, setSelectedCity] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [markets, setMarkets] = useState<Market[]>(sampleMarkets);
+  const [loading, setLoading] = useState(false);
 
-  const filteredMarkets = sampleMarkets.filter((market) => {
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
+  // 백엔드에서 마켓 데이터 가져오기
+  useEffect(() => {
+    const fetchMarkets = async () => {
+      try {
+        setLoading(true);
+        const params = new URLSearchParams();
+        if (selectedCountry !== 'all') params.append('country', selectedCountry);
+        if (selectedCity !== 'all') params.append('city', selectedCity);
+        if (searchQuery) params.append('search', searchQuery);
+
+        const response = await fetch(`${API_BASE_URL}/api/markets?${params.toString()}`);
+        const data = await response.json();
+
+        if (data.success) {
+          setMarkets(data.data);
+        } else {
+          // 백엔드 오류 시 샘플 데이터 사용
+          setMarkets(sampleMarkets);
+        }
+      } catch (error) {
+        console.error('마켓 조회 오류:', error);
+        // 네트워크 오류 시 샘플 데이터 사용
+        setMarkets(sampleMarkets);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMarkets();
+  }, [selectedCountry, selectedCity, searchQuery]);
+
+  const filteredMarkets = markets.filter((market) => {
     const countryMatch = selectedCountry === 'all' || market.country === selectedCountry;
     const cityMatch = selectedCity === 'all' || market.city === selectedCity;
     const searchMatch =
@@ -110,52 +147,7 @@ function Markets() {
   return (
     <div className="markets-container">
       {/* Sidebar */}
-      <aside className="markets-sidebar">
-        <div className="sidebar-header">
-          <div className="sidebar-logo" onClick={() => navigate('/app')}>
-            <div className="logo-icon">🌍</div>
-            <span className="logo-text">wEaTHer</span>
-          </div>
-        </div>
-        <nav className="sidebar-nav">
-          <div className="nav-section">
-            <div className="nav-item" onClick={() => navigate('/app')}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="3" width="7" height="7"/>
-                <rect x="14" y="3" width="7" height="7"/>
-                <rect x="14" y="14" width="7" height="7"/>
-                <rect x="3" y="14" width="7" height="7"/>
-              </svg>
-              <span>Dashboard</span>
-            </div>
-            <div className="nav-item active">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 6v6l4 2"/>
-              </svg>
-              <span>Markets</span>
-            </div>
-            <div className="nav-item" onClick={() => navigate('/app')}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-                <line x1="12" y1="22.08" x2="12" y2="12"/>
-              </svg>
-              <span>My Predictions</span>
-            </div>
-          </div>
-          <div className="nav-section">
-            <div className="nav-section-title">Settings</div>
-            <div className="nav-item" onClick={() => navigate('/settings')}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M12 1v6m0 6v6m9-9h-6m-6 0H3"/>
-              </svg>
-              <span>Settings</span>
-            </div>
-          </div>
-        </nav>
-      </aside>
+      <Sidebar />
 
       {/* Main Content */}
       <div className="markets-main-wrapper">
@@ -244,6 +236,16 @@ function Markets() {
             <div className="markets-grid">
               {filteredMarkets.map((market) => {
                 const countryData = countries.find((c) => c.code === market.country);
+                const getCountryFlag = (code: string) => {
+                  const flags: { [key: string]: string } = {
+                    US: '🇺🇸',
+                    CN: '🇨🇳',
+                    JP: '🇯🇵',
+                    GB: '🇬🇧',
+                    KR: '🇰🇷',
+                  };
+                  return flags[code] || '🌍';
+                };
                 return (
                   <div
                     key={market.id}
@@ -252,10 +254,10 @@ function Markets() {
                   >
                     <div className="market-card-header">
                       <div className="market-location">
-                        <span className="market-flag">{countryData?.flag}</span>
+                        <span className="market-flag">{getCountryFlag(market.country)}</span>
                         <div>
                           <h3 className="market-city">{market.city}</h3>
-                          <p className="market-country">{countryData?.name}</p>
+                          <p className="market-country">{market.countryName || countryData?.name || market.country}</p>
                         </div>
                       </div>
                       <span className={`market-status ${market.status}`}>

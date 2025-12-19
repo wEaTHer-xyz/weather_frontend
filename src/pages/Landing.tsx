@@ -461,7 +461,8 @@ function Landing() {
           </div>
 
           <div className="footer-bottom">
-            <p className="footer-copyright">&copy; 2024 wEaTHer. All rights reserved.</p>
+            <p className="footer-copyright">&copy; 2025 wEaTHer. All rights reserved.</p>
+            <p className="footer-creator">Made by moneymonkey</p>
           </div>
         </div>
       </footer>

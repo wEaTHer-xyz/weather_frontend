@@ -1,18 +1,116 @@
 import { usePrivy } from '@privy-io/react-auth';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import Sidebar from '../components/Sidebar';
 import './Dashboard.css';
+
+interface UserProfile {
+  id: string;
+  privyId: string;
+  email: string | null;
+  nickname: string | null;
+  profileImage: string | null;
+  googleName: string | null;
+  googlePicture: string | null;
+}
 
 function Dashboard() {
   const { authenticated, ready, user, logout } = usePrivy();
   const navigate = useNavigate();
-  const [activeMenu, setActiveMenu] = useState('dashboard');
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [balance, setBalance] = useState<string>('0.00');
+  const [balanceLoading, setBalanceLoading] = useState(false);
+
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
   useEffect(() => {
     if (ready && !authenticated) {
       navigate('/login');
     }
   }, [ready, authenticated, navigate]);
+
+  useEffect(() => {
+    if (ready && authenticated && user) {
+      fetchProfile();
+      fetchBalance();
+    }
+  }, [ready, authenticated, user]);
+
+  const fetchBalance = async () => {
+    const walletAddress = user?.wallet?.address;
+    if (!walletAddress) {
+      setBalance('0.00');
+      return;
+    }
+
+    try {
+      setBalanceLoading(true);
+      // Ethereum Mainnet RPC를 통해 잔고 조회
+      // 테스트넷을 사용하는 경우 RPC URL을 변경하세요
+      const response = await fetch(`https://eth.llamarpc.com`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'eth_getBalance',
+          params: [walletAddress, 'latest'],
+          id: 1,
+        }),
+      });
+
+      const data = await response.json();
+      if (data.result) {
+        // Wei를 ETH로 변환 (1 ETH = 10^18 Wei)
+        const wei = BigInt(data.result);
+        const eth = Number(wei) / 1e18;
+        setBalance(eth.toFixed(4));
+      } else {
+        setBalance('0.00');
+      }
+    } catch (error) {
+      console.error('잔고 조회 오류:', error);
+      setBalance('0.00');
+    } finally {
+      setBalanceLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (showProfileDropdown && !target.closest('.user-profile-wrapper')) {
+        setShowProfileDropdown(false);
+      }
+    };
+
+    if (showProfileDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showProfileDropdown]);
+
+  const fetchProfile = async () => {
+    try {
+      const privyId = user?.id || '';
+      if (!privyId) return;
+
+      const response = await fetch(`${API_BASE_URL}/api/user/profile/${privyId}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setProfile(data.user);
+        }
+      }
+    } catch (error) {
+      console.error('프로필 조회 오류:', error);
+    }
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -40,89 +138,12 @@ function Dashboard() {
   return (
     <div className="dashboard-container">
       {/* Sidebar */}
-      <aside className="dashboard-sidebar">
-        <div className="sidebar-header">
-          <div className="sidebar-logo">
-            <div className="logo-icon">🌍</div>
-            <span className="logo-text">wEaTHer</span>
-          </div>
-        </div>
-        <nav className="sidebar-nav">
-          <div className="nav-section">
-            <div 
-              className={`nav-item ${activeMenu === 'dashboard' ? 'active' : ''}`}
-              onClick={() => setActiveMenu('dashboard')}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="3" width="7" height="7"/>
-                <rect x="14" y="3" width="7" height="7"/>
-                <rect x="14" y="14" width="7" height="7"/>
-                <rect x="3" y="14" width="7" height="7"/>
-              </svg>
-              <span>Dashboard</span>
-            </div>
-            <div 
-              className={`nav-item ${activeMenu === 'markets' ? 'active' : ''}`}
-              onClick={() => navigate('/markets')}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 6v6l4 2"/>
-              </svg>
-              <span>Markets</span>
-            </div>
-            <div 
-              className={`nav-item ${activeMenu === 'predictions' ? 'active' : ''}`}
-              onClick={() => setActiveMenu('predictions')}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-                <line x1="12" y1="22.08" x2="12" y2="12"/>
-              </svg>
-              <span>My Predictions</span>
-            </div>
-            <div 
-              className={`nav-item ${activeMenu === 'history' ? 'active' : ''}`}
-              onClick={() => setActiveMenu('history')}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-              </svg>
-              <span>History</span>
-          </div>
-            <div 
-              className={`nav-item ${activeMenu === 'leaderboard' ? 'active' : ''}`}
-              onClick={() => setActiveMenu('leaderboard')}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
-              </svg>
-              <span>Leaderboard</span>
-            </div>
-          </div>
-          <div className="nav-section">
-            <div className="nav-section-title">Settings</div>
-            <div 
-              className={`nav-item ${activeMenu === 'settings' ? 'active' : ''}`}
-              onClick={() => navigate('/settings')}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M12 1v6m0 6v6m9-9h-6m-6 0H3"/>
-              </svg>
-              <span>Settings</span>
-            </div>
-          </div>
-        </nav>
-      </aside>
+      <Sidebar />
 
       {/* Main Content */}
       <div className="dashboard-main-wrapper">
         {/* Top Header */}
-        <header className="dashboard-header">
+      <header className="dashboard-header">
           <div className="header-search">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8"/>
@@ -142,21 +163,79 @@ function Dashboard() {
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
               </svg>
             </button>
-            <div className="user-profile">
-              <div className="user-avatar">
-                {user?.wallet?.address?.slice(0, 2).toUpperCase() || 'U'}
-              </div>
-              <span className="user-name">
-                {user?.wallet?.address?.slice(0, 6)}...{user?.wallet?.address?.slice(-4) ||
-                 user?.email?.address || 'User'}
-              </span>
-              <button className="logout-btn" onClick={handleLogout}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                  <polyline points="16 17 21 12 16 7"/>
-                  <line x1="21" y1="12" x2="9" y2="12"/>
-                </svg>
+            <div className="user-profile-wrapper">
+              <div className="user-profile" onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
+                <div className="user-avatar-container">
+                  <div className="user-avatar">
+                    {profile?.profileImage ? (
+                      <img src={profile.profileImage.startsWith('http') ? profile.profileImage : `${API_BASE_URL}${profile.profileImage}`} alt="Profile" />
+                    ) : profile?.googlePicture ? (
+                      <img src={profile.googlePicture} alt="Profile" />
+                    ) : (user as any)?.google?.picture ? (
+                      <img src={(user as any).google.picture} alt="Profile" />
+                    ) : (
+                      <div className="avatar-initials">
+                        {profile?.nickname?.charAt(0).toUpperCase() || 
+                         (user as any)?.google?.name?.charAt(0).toUpperCase() || 
+                         user?.email?.address?.charAt(0).toUpperCase() || 
+                         user?.wallet?.address?.slice(0, 2).toUpperCase() || 'U'}
+                      </div>
+                    )}
+                  </div>
+          </div>
+        </div>
+              
+              {showProfileDropdown && (
+                <div className="profile-dropdown">
+                  <div className="dropdown-header">
+                    <div className="dropdown-avatar">
+                      {profile?.profileImage ? (
+                        <img src={profile.profileImage.startsWith('http') ? profile.profileImage : `${API_BASE_URL}${profile.profileImage}`} alt="Profile" />
+                      ) : profile?.googlePicture ? (
+                        <img src={profile.googlePicture} alt="Profile" />
+                      ) : (user as any)?.google?.picture ? (
+                        <img src={(user as any).google.picture} alt="Profile" />
+                      ) : (
+                        <div className="avatar-initials">
+                          {profile?.nickname?.charAt(0).toUpperCase() || 
+                           (user as any)?.google?.name?.charAt(0).toUpperCase() || 
+                           user?.email?.address?.charAt(0).toUpperCase() || 'U'}
+                        </div>
+                      )}
+            </div>
+                    <div className="dropdown-info">
+                      <div className="dropdown-nickname">
+                        {profile?.nickname || (user as any)?.google?.name || user?.email?.address || 'User'}
+          </div>
+                      <div className="dropdown-email">
+                        {user?.email?.address || user?.wallet?.address?.slice(0, 6)}...{user?.wallet?.address?.slice(-4) || ''}
+            </div>
+          </div>
+            </div>
+                  <div className="dropdown-balance">
+                    <span className="balance-label">Balance</span>
+                    <span className="balance-value">
+                      {balanceLoading ? 'Loading...' : `${balance} ETH`}
+                    </span>
+          </div>
+                  {user?.wallet?.address && (
+                    <div className="dropdown-wallet-address">
+                      <span className="wallet-address-label">Wallet</span>
+                      <span className="wallet-address-value" title={user.wallet.address}>
+                        {user.wallet.address.slice(0, 6)}...{user.wallet.address.slice(-4)}
+                      </span>
+            </div>
+                  )}
+                  <div className="dropdown-actions">
+                    <button className="dropdown-action-btn" onClick={() => { setShowProfileDropdown(false); navigate('/settings'); }}>
+                      Settings
             </button>
+                    <button className="dropdown-action-btn logout" onClick={handleLogout}>
+                      Logout
+            </button>
+          </div>
+                </div>
+              )}
             </div>
           </div>
         </header>
@@ -165,7 +244,7 @@ function Dashboard() {
         <main className="dashboard-main">
           {/* Overview Section */}
           <section className="overview-section">
-            <h2 className="section-title">Overview Performance in 2024</h2>
+            <h2 className="section-title">Overview Performance in 2025</h2>
             <div className="overview-grid">
               {/* Left Card - KPIs and Bar Chart */}
               <div className="overview-card">
@@ -355,25 +434,25 @@ function Dashboard() {
                   <tbody>
                     <tr>
                       <td>New York Weather</td>
-                      <td>12/02/2024</td>
+                      <td>12/02/2025</td>
                       <td>$1,234</td>
                       <td><span className="status-badge active">Active</span></td>
                     </tr>
                     <tr>
                       <td>London Temperature</td>
-                      <td>12/02/2024</td>
+                      <td>12/02/2025</td>
                       <td>$856</td>
                       <td><span className="status-badge active">Active</span></td>
                     </tr>
                     <tr>
                       <td>Tokyo Humidity</td>
-                      <td>12/02/2024</td>
+                      <td>12/02/2025</td>
                       <td>$2,145</td>
                       <td><span className="status-badge active">Active</span></td>
                     </tr>
                     <tr>
                       <td>Seoul Snow</td>
-                      <td>12/02/2024</td>
+                      <td>12/02/2025</td>
                       <td>$1,567</td>
                       <td><span className="status-badge active">Active</span></td>
                     </tr>

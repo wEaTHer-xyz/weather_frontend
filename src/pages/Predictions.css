@@ -1,4 +1,4 @@
-.markets-container {
+.predictions-container {
   display: flex;
   min-height: 100vh;
   background: #f8fafc;
@@ -6,7 +6,7 @@
 }
 
 /* Main Wrapper */
-.markets-main-wrapper {
+.predictions-main-wrapper {
   flex: 1;
   margin-left: 260px;
   display: flex;
@@ -16,12 +16,12 @@
   transition: margin-left 0.3s ease;
 }
 
-body.sidebar-collapsed .markets-main-wrapper {
+body.sidebar-collapsed .predictions-main-wrapper {
   margin-left: 80px;
 }
 
 /* Header */
-.markets-header {
+.predictions-header {
   background: white;
   border-bottom: 1px solid #e2e8f0;
   padding: 2rem;
@@ -33,120 +33,27 @@ body.sidebar-collapsed .markets-main-wrapper {
 .header-content {
   max-width: 1400px;
   margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 2rem;
 }
 
 .page-title {
   font-size: 2rem;
   font-weight: 900;
   color: #1e293b;
-  margin: 0;
+  margin: 0 0 0.5rem 0;
   background: linear-gradient(135deg, #00d4ff, #6366f1);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.header-search {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  background: #f1f5f9;
-  border-radius: 10px;
-  padding: 0.75rem 1rem;
-  width: 100%;
-  max-width: 400px;
-}
-
-.header-search svg {
+.page-subtitle {
+  font-size: 1rem;
   color: #64748b;
-  flex-shrink: 0;
+  margin: 0;
 }
 
-.header-search input {
-  border: none;
-  background: transparent;
-  outline: none;
-  font-size: 0.9375rem;
-  color: #1e293b;
-  width: 100%;
-}
-
-.header-search input::placeholder {
-  color: #94a3b8;
-}
-
-/* Filters Section */
-.filters-section {
-  background: white;
-  border-bottom: 1px solid #e2e8f0;
-  padding: 1.5rem 2rem;
-}
-
-.filter-group {
-  margin-bottom: 1rem;
-}
-
-.filter-group:last-child {
-  margin-bottom: 0;
-}
-
-.filter-label {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #64748b;
-  margin-bottom: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.country-selector,
-.city-selector {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.country-btn,
-.city-btn {
-  padding: 0.625rem 1.25rem;
-  border-radius: 10px;
-  border: 1px solid #e2e8f0;
-  background: white;
-  color: #64748b;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.country-btn:hover,
-.city-btn:hover {
-  border-color: #00d4ff;
-  color: #00d4ff;
-  background: rgba(0, 212, 255, 0.05);
-}
-
-.country-btn.active,
-.city-btn.active {
-  background: linear-gradient(135deg, #00d4ff, #6366f1);
-  border-color: transparent;
-  color: white;
-}
-
-.country-flag {
-  font-size: 1.25rem;
-}
-
-/* Markets Content */
-.markets-content {
+/* Content */
+.predictions-content {
   flex: 1;
   padding: 2rem;
   max-width: 1400px;
@@ -154,13 +61,13 @@ body.sidebar-collapsed .markets-main-wrapper {
   width: 100%;
 }
 
-.markets-grid {
+.predictions-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   gap: 1.5rem;
 }
 
-.market-card {
+.prediction-card {
   background: white;
   border-radius: 16px;
   padding: 1.5rem;
@@ -170,44 +77,44 @@ body.sidebar-collapsed .markets-main-wrapper {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.market-card:hover {
+.prediction-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 24px rgba(0, 212, 255, 0.15);
   border-color: #00d4ff;
 }
 
-.market-card-header {
+.prediction-card-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 1rem;
 }
 
-.market-location {
+.prediction-location {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
-.market-flag {
+.prediction-flag {
   font-size: 2rem;
   line-height: 1;
 }
 
-.market-city {
+.prediction-city {
   font-size: 1.25rem;
   font-weight: 700;
   color: #1e293b;
   margin: 0 0 0.25rem 0;
 }
 
-.market-country {
+.prediction-country {
   font-size: 0.875rem;
   color: #64748b;
   margin: 0;
 }
 
-.market-status {
+.prediction-status {
   padding: 0.375rem 0.875rem;
   border-radius: 12px;
   font-size: 0.75rem;
@@ -216,55 +123,82 @@ body.sidebar-collapsed .markets-main-wrapper {
   letter-spacing: 0.05em;
 }
 
-.market-status.active {
+.prediction-status.active {
   background: rgba(0, 212, 255, 0.1);
   color: #00d4ff;
 }
 
-.market-status.closed {
+.prediction-status.closed {
   background: rgba(100, 116, 139, 0.1);
   color: #64748b;
 }
 
-.market-question {
+.prediction-status.resolved {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+}
+
+.prediction-question {
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid #f1f5f9;
 }
 
-.market-question p {
+.prediction-question p {
   font-size: 1rem;
   color: #1e293b;
   margin: 0;
   line-height: 1.5;
 }
 
-.market-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
+.prediction-bet-info {
   margin-bottom: 1.5rem;
-}
-
-.market-stat {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.75rem;
 }
 
-.market-stat .stat-label {
-  font-size: 0.75rem;
+.bet-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bet-info-label {
+  font-size: 0.875rem;
   color: #64748b;
   font-weight: 500;
 }
 
-.market-stat .stat-value {
-  font-size: 1rem;
-  font-weight: 700;
+.bet-info-value {
+  font-size: 0.9375rem;
+  font-weight: 600;
   color: #1e293b;
 }
 
-.market-action-btn {
+.bet-type-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.bet-type-badge.buy {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+}
+
+.bet-type-badge.sell {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.prediction-footer {
+  padding-top: 1rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.view-market-button {
   width: 100%;
   padding: 0.875rem;
   background: linear-gradient(135deg, #00d4ff, #6366f1);
@@ -277,7 +211,7 @@ body.sidebar-collapsed .markets-main-wrapper {
   transition: all 0.3s ease;
 }
 
-.market-action-btn:hover {
+.view-market-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 212, 255, 0.4);
 }
@@ -303,48 +237,91 @@ body.sidebar-collapsed .markets-main-wrapper {
 .empty-state p {
   font-size: 1rem;
   color: #64748b;
-  margin: 0;
+  margin: 0 0 1.5rem 0;
+}
+
+.login-button,
+.go-to-markets-button {
+  padding: 0.875rem 2rem;
+  background: linear-gradient(135deg, #00d4ff, #6366f1);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.login-button:hover,
+.go-to-markets-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 212, 255, 0.4);
+}
+
+.loading {
+  text-align: center;
+  padding: 4rem 2rem;
+  font-size: 1.125rem;
+  color: #64748b;
+}
+
+.error-message {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.error-message h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 0.5rem 0;
+}
+
+.error-message p {
+  font-size: 1rem;
+  color: #64748b;
+  margin: 0 0 1.5rem 0;
+}
+
+.retry-button {
+  padding: 0.875rem 2rem;
+  background: linear-gradient(135deg, #00d4ff, #6366f1);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.retry-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 212, 255, 0.4);
 }
 
 /* Responsive */
 @media (max-width: 1024px) {
-  .markets-grid {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  .predictions-list {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   }
 }
 
 @media (max-width: 768px) {
-  .markets-main-wrapper {
+  .predictions-main-wrapper {
     margin-left: 80px;
   }
   
-  .markets-header {
+  .predictions-header {
     padding: 1rem;
   }
   
-  .header-content {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .header-search {
-    max-width: 100%;
-  }
-  
-  .filters-section {
+  .predictions-content {
     padding: 1rem;
   }
   
-  .markets-content {
-    padding: 1rem;
-  }
-  
-  .markets-grid {
+  .predictions-list {
     grid-template-columns: 1fr;
   }
-  
-  .market-stats {
-    grid-template-columns: repeat(3, 1fr);
-  }
 }
-

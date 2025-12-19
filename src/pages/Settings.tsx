@@ -1,6 +1,7 @@
 import { usePrivy } from '@privy-io/react-auth';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import Sidebar from '../components/Sidebar';
 import './Settings.css';
 
 interface UserProfile {
@@ -212,41 +213,7 @@ function Settings() {
   return (
     <div className="settings-container">
       {/* Sidebar */}
-      <aside className="settings-sidebar">
-        <div className="sidebar-header">
-          <div className="sidebar-logo" onClick={() => navigate('/app')}>
-            <div className="logo-icon">🌍</div>
-            <span className="logo-text">wEaTHer</span>
-          </div>
-        </div>
-        <nav className="sidebar-nav">
-          <div className="nav-section">
-            <div className="nav-item" onClick={() => navigate('/app')}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="3" width="7" height="7"/>
-                <rect x="14" y="3" width="7" height="7"/>
-                <rect x="14" y="14" width="7" height="7"/>
-                <rect x="3" y="14" width="7" height="7"/>
-              </svg>
-              <span>Dashboard</span>
-            </div>
-            <div className="nav-item" onClick={() => navigate('/markets')}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 6v6l4 2"/>
-              </svg>
-              <span>Markets</span>
-            </div>
-            <div className="nav-item active">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M12 1v6m0 6v6m9-9h-6m-6 0H3"/>
-              </svg>
-              <span>Settings</span>
-            </div>
-          </div>
-        </nav>
-      </aside>
+      <Sidebar />
 
       {/* Main Content */}
       <div className="settings-main-wrapper">
